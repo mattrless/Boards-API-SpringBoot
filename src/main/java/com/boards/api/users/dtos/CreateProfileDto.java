@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class CreateProfileDto {
-  @NotBlank  
+  @NotBlank
   private String name;
 
   @URL

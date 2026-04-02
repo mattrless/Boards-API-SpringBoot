@@ -1,7 +1,9 @@
 package com.boards.api.users.services;
 
 import com.boards.api.users.dtos.CreateUserDto;
+import com.boards.api.users.dtos.UpdateUserDto;
 import com.boards.api.users.dtos.UserResponseDto;
+import com.boards.api.users.entities.Profile;
 import com.boards.api.users.entities.User;
 import com.boards.api.users.mappers.UserMapper;
 import com.boards.api.users.repositories.UserRepository;
@@ -41,12 +43,42 @@ public class UserService {
   }
 
   public UserResponseDto findById(Long id) {
-    User user = userRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "User not found"
-          ));
+    User user = findUserByIdOrThrow(id);
     return userMapper.toResponseDto(user);
+  }
+
+  public UserResponseDto update(Long id, UpdateUserDto updateUserDto){
+    User user = findUserByIdOrThrow(id);
+
+    if (updateUserDto.getEmail() != null) {
+      // Update the email if it's not already used by another user.
+      if (userRepository.existsByEmailAndIdNot(updateUserDto.getEmail(), id)) {
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
+      }
+      user.setEmail(updateUserDto.getEmail());
+    }
+
+    if (updateUserDto.getPassword() != null) {
+      // hash password
+      user.setPassword(updateUserDto.getPassword());
+    }
+
+    if (updateUserDto.getProfile() != null) {
+      if (user.getProfile() == null) {
+        user.setProfile(new Profile());
+      }
+
+      if (updateUserDto.getProfile().getName() != null) {
+        user.getProfile().setName(updateUserDto.getProfile().getName());
+      }
+
+      if (updateUserDto.getProfile().getAvatar() != null) {
+        user.getProfile().setAvatar(updateUserDto.getProfile().getAvatar());
+      }
+    }
+
+    User updatedUser = userRepository.save(user);
+    return userMapper.toResponseDto(updatedUser);
   }
   
   public void remove(Long id) {
@@ -57,12 +89,15 @@ public class UserService {
 
     // userRepository.deleteById(id);
 
-    User user = userRepository.findById(id)
+    User user = findUserByIdOrThrow(id);
+    userRepository.delete(user);
+  }
+
+  private User findUserByIdOrThrow(Long id){
+    return userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
                     "User not found"
-            ));
-
-    userRepository.delete(user);
+          ));
   }
 }

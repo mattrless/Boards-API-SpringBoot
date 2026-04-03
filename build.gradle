@@ -37,7 +37,7 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
-	// MapStruct
+	// MapStruct (Lombok annotationProcessor above MapStruct)
 	implementation 'org.mapstruct:mapstruct:1.6.3'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 	testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
@@ -47,6 +47,15 @@ dependencies {
 
 	// Docker
 	runtimeOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+	// Spring Secutity
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+  testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
+
+	// JWT
+	implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
 
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'

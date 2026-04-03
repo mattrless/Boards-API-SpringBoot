@@ -8,21 +8,22 @@ import com.boards.api.users.entities.User;
 import com.boards.api.users.mappers.UserMapper;
 import com.boards.api.users.repositories.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor // To generate constructor with final properties
 public class UserService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
+  private final PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository userRepository, UserMapper userMapper) {
-    this.userRepository = userRepository;
-    this.userMapper = userMapper;
-  }
 
   public List<UserResponseDto> findAll() {
     return userRepository.findAll()
@@ -32,12 +33,14 @@ public class UserService {
   }
 
   public UserResponseDto create(CreateUserDto createUserDto) {
-    User user = userMapper.toEntity(createUserDto);
-
     if (userRepository.existsByEmail(createUserDto.getEmail())) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
     }
-    // hash password
+
+    User user = userMapper.toEntity(createUserDto);
+
+    user.setPassword(hashPassword(createUserDto.getPassword()));
+    
     User savedUser = userRepository.save(user);
     return userMapper.toResponseDto(savedUser);
   }
@@ -58,9 +61,8 @@ public class UserService {
       user.setEmail(updateUserDto.getEmail());
     }
 
-    if (updateUserDto.getPassword() != null) {
-      // hash password
-      user.setPassword(updateUserDto.getPassword());
+    if (updateUserDto.getPassword() != null) {      
+      user.setPassword(hashPassword(updateUserDto.getPassword()));
     }
 
     if (updateUserDto.getProfile() != null) {
@@ -99,5 +101,9 @@ public class UserService {
                     HttpStatus.NOT_FOUND,
                     "User not found"
           ));
+  }
+
+  private String hashPassword(String password){
+    return passwordEncoder.encode(password);
   }
 }

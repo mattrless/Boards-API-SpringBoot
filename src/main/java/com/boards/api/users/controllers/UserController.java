@@ -5,6 +5,8 @@ import com.boards.api.users.dtos.UpdateUserDto;
 import com.boards.api.users.dtos.UserResponseDto;
 import com.boards.api.users.services.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
   private final UserService userService;
-
-  public UserController(UserService userService) {
-    this.userService = userService;
-  }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)

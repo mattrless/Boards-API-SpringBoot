@@ -38,3 +38,6 @@ out/
 .codex
 
 migration_content.sql
+
+.env
+api.http

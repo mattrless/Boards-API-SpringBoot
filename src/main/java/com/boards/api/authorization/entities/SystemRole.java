@@ -31,7 +31,7 @@ public class SystemRole {
 
   @ManyToMany
   @JoinTable(
-    name = "system_role_system_permissions",
+    name = "system_role_system_permission",
     joinColumns = @JoinColumn(name = "system_role_id"),
     inverseJoinColumns = @JoinColumn(name = "permission_id")
   )

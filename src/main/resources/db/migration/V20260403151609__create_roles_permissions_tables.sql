@@ -1,5 +1,7 @@
 
-create table board_role_board_permissions (
+CREATE TYPE public."PermissionType" AS ENUM ('SYSTEM', 'BOARD');
+
+create table board_role_board_permission (
     board_role_id bigint not null,
     permission_id bigint not null,
     primary key (board_role_id, permission_id)
@@ -18,7 +20,7 @@ create table permissions (
     primary key (id)
 );
 
-create table system_role_system_permissions (
+create table system_role_system_permission (
     system_role_id bigint not null,
     permission_id bigint not null,
     primary key (system_role_id, permission_id)
@@ -48,22 +50,22 @@ alter table if exists system_roles
 alter table if exists system_roles 
     add constraint UK62dv2k9crwiu959lu1vy273xu unique (name);
 
-alter table if exists board_role_board_permissions 
+alter table if exists board_role_board_permission 
     add constraint FK1qy7mgo9lrphf23w5r6jgr6dx 
     foreign key (permission_id) 
     references permissions;
 
-alter table if exists board_role_board_permissions 
+alter table if exists board_role_board_permission 
     add constraint FKrpfhwpkm9j5rhkbkbjyv3hoar 
     foreign key (board_role_id) 
     references board_roles;
 
-alter table if exists system_role_system_permissions 
+alter table if exists system_role_system_permission 
     add constraint FKsf4jbhdit25m8ylcsigjlfjgw 
     foreign key (permission_id) 
     references permissions;
 
-alter table if exists system_role_system_permissions 
+alter table if exists system_role_system_permission 
     add constraint FK6chlpvsrh9lq6ju6p4re5xdl6 
     foreign key (system_role_id) 
     references system_roles;

@@ -10,6 +10,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.boards.api.authorization.entities.SystemRole;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -41,4 +43,8 @@ public class User {
   @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }) // opt: (fetch = FetchType.LAZY)
   @JoinColumn(name = "profile_id", referencedColumnName = "id", unique = true)
   private Profile profile;
+
+  @ManyToOne
+  @JoinColumn(name = "system_role_id")
+  private SystemRole systemRole;
 }

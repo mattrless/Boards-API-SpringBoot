@@ -75,8 +75,8 @@ INSERT INTO public.system_role_system_permission (system_role_id,permission_id) 
 	 (2,7),
 	 (2,9);
    
--- INSERT INTO public.profiles ("name",avatar,created_at,updated_at) VALUES
--- 	 ('Admin',NULL,'2026-03-17 16:31:47.912','2026-03-17 16:31:47.912');
+INSERT INTO public.profiles ("name",avatar,created_at,updated_at) VALUES
+	 ('Admin',NULL,'2026-03-17 16:31:47.912','2026-03-17 16:31:47.912');
 	--  ('John Daniel','https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg','2026-03-17 16:31:47.928','2026-03-17 16:31:47.928'),
 	--  ('Jane Nikolaus','https://img.freepik.com/premium-vector/smiling-woman-avatar_937492-6135.jpg','2026-03-17 16:31:47.938','2026-03-17 16:31:47.938'),
 	--  ('Mari Doe','https://img.freepik.com/vector-premium/retrato-mujer-negocios_505024-2787.jpg','2026-03-17 16:31:47.947','2026-03-17 16:31:47.947'),
@@ -104,8 +104,8 @@ INSERT INTO public.system_role_system_permission (system_role_id,permission_id) 
 	--  ('Admin',NULL,'2026-03-17 17:00:44.982','2026-03-17 17:00:44.982'),
 	--  ('John Daniel','https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg','2026-03-17 17:00:45.02','2026-03-17 17:00:45.02');
 
--- INSERT INTO public.users (email,"password",profile_id,system_role_id,created_at,updated_at,deleted_at) VALUES
--- 	 ('admin@boards.com','$2b$10$Eym48W8JIdwlbpN4Q/a6N.7fSaigBZ7rpxQsSYN5X8uiGPhcPs7y2',1,1,'2026-03-17 16:31:47.921','2026-03-17 16:31:47.921',FALSE);
+INSERT INTO public.users (email,"password",profile_id,system_role_id,created_at,updated_at,deleted_at) VALUES
+	 ('admin@boards.com','$2b$10$Eym48W8JIdwlbpN4Q/a6N.7fSaigBZ7rpxQsSYN5X8uiGPhcPs7y2',1,1,'2026-03-17 16:31:47.921','2026-03-17 16:31:47.921',FALSE);
 	--  ('john.daniel@mail.com','$2b$10$KHNywjOQ/our6pDpAsYiT.nmPRO1avFQ5s/dOmKACqkGw4ZD3B/2S',2,2,'2026-03-17 16:31:47.934','2026-03-17 16:31:47.934',FALSE),
 	--  ('jane.nikolaus@mail.com','$2b$10$KHNywjOQ/our6pDpAsYiT.nmPRO1avFQ5s/dOmKACqkGw4ZD3B/2S',3,2,'2026-03-17 16:31:47.941','2026-03-17 16:31:47.941',FALSE),
 	--  ('mari.doe@mail.com','$2b$10$KHNywjOQ/our6pDpAsYiT.nmPRO1avFQ5s/dOmKACqkGw4ZD3B/2S',4,2,'2026-03-17 16:31:47.951','2026-03-17 16:31:47.951',FALSE),

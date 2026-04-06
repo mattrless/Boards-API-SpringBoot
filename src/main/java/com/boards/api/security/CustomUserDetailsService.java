@@ -1,5 +1,6 @@
 package com.boards.api.security;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,14 +25,14 @@ public class CustomUserDetailsService implements UserDetailsService {
   }
 
   public UserDetails buildUserDetails(User user) {
-    return org.springframework.security.core.userdetails.User
-            .withUsername(user.getEmail())
-            .password(user.getPassword())
-            .authorities(
-              user.getSystemRole().getPermissions().stream()
-                  .map(permission -> permission.getName())
-                  .toArray(String[]::new)
-            )
-            .build();
+    return new AuthenticatedUser(
+            user.getId(),
+            user.getEmail(),
+            user.getPassword(),
+            user.getSystemRole().getPermissions().stream()
+                  .map(permission -> new SimpleGrantedAuthority(permission.getName()))
+                  .toList()
+    );
   }
+
 }

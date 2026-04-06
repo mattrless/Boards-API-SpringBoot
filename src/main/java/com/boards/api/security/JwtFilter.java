@@ -38,7 +38,7 @@ public class JwtFilter extends OncePerRequestFilter{
 
       if (jwtUtil.validateJwtToken(token)) {
         Long userId = jwtUtil.extractUserId(token);
-        User user = userRepository.findById(userId)
+        User user = userRepository.findWithSystemRoleAndPermissionsById(userId)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));      
         
         UserDetails userDetails = customUserDetailsService.buildUserDetails(user);

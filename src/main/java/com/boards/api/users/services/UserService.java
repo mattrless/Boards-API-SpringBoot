@@ -1,5 +1,7 @@
 package com.boards.api.users.services;
 
+import com.boards.api.authorization.entities.SystemRole;
+import com.boards.api.authorization.repositories.SystemRoleRepository;
 import com.boards.api.users.dtos.CreateUserDto;
 import com.boards.api.users.dtos.UpdateUserDto;
 import com.boards.api.users.dtos.UserResponseDto;
@@ -23,6 +25,7 @@ public class UserService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
+  private final SystemRoleRepository systemRoleRepository;
 
 
   public List<UserResponseDto> findAll() {
@@ -37,10 +40,17 @@ public class UserService {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
     }
 
+    SystemRole userSystemRole = systemRoleRepository.findByName("user")
+      .orElseThrow(() -> new ResponseStatusException(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Default system role not found"
+      ));
+
     User user = userMapper.toEntity(createUserDto);
 
     user.setPassword(hashPassword(createUserDto.getPassword()));
-    
+    user.setSystemRole(userSystemRole);
+
     User savedUser = userRepository.save(user);
     return userMapper.toResponseDto(savedUser);
   }

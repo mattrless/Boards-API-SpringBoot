@@ -4,6 +4,8 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+import com.boards.api.authorization.dtos.SystemRoleResponseDto;
+
 @Data
 public class UserResponseDto {
   private Long id;
@@ -11,4 +13,5 @@ public class UserResponseDto {
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
   private ProfileResponseDto profile;
+  private SystemRoleResponseDto systemRole;
 }

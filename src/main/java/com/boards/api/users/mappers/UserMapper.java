@@ -3,6 +3,8 @@ package com.boards.api.users.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import com.boards.api.authorization.dtos.SystemRoleResponseDto;
+import com.boards.api.authorization.entities.SystemRole;
 import com.boards.api.users.dtos.CreateProfileDto;
 import com.boards.api.users.dtos.CreateUserDto;
 import com.boards.api.users.dtos.ProfileResponseDto;
@@ -26,4 +28,6 @@ public interface UserMapper {
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   Profile toEntity(CreateProfileDto request);
+
+  SystemRoleResponseDto toResponseDto(SystemRole systemRole);
 }

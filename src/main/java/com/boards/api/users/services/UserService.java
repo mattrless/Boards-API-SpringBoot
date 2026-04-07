@@ -3,6 +3,7 @@ package com.boards.api.users.services;
 import com.boards.api.authorization.entities.SystemRole;
 import com.boards.api.authorization.repositories.SystemRoleRepository;
 import com.boards.api.users.dtos.CreateUserDto;
+import com.boards.api.users.dtos.MeResponseDto;
 import com.boards.api.users.dtos.UpdateUserDto;
 import com.boards.api.users.dtos.UserResponseDto;
 import com.boards.api.users.entities.Profile;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor // To generate constructor with final properties
@@ -103,6 +105,23 @@ public class UserService {
 
     User user = findUserByIdOrThrow(id);
     userRepository.delete(user);
+  }
+
+  public MeResponseDto findMe(Long id){
+    User user = userRepository.findWithSystemRoleAndPermissionsById(id)
+      .orElseThrow(() -> new ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "User not found"
+    ));
+
+    MeResponseDto response = userMapper.toMeResponseDto(user);
+    response.setPermissions(
+      user.getSystemRole().getPermissions().stream()
+        .map(permission -> permission.getName())
+        .collect(Collectors.toSet())
+    );
+    
+    return response;
   }
 
   private User findUserByIdOrThrow(Long id){

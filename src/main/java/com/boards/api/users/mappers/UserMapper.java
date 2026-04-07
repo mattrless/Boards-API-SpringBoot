@@ -7,6 +7,7 @@ import com.boards.api.authorization.dtos.SystemRoleResponseDto;
 import com.boards.api.authorization.entities.SystemRole;
 import com.boards.api.users.dtos.CreateProfileDto;
 import com.boards.api.users.dtos.CreateUserDto;
+import com.boards.api.users.dtos.MeResponseDto;
 import com.boards.api.users.dtos.ProfileResponseDto;
 import com.boards.api.users.dtos.UserResponseDto;
 import com.boards.api.users.entities.Profile;
@@ -30,4 +31,7 @@ public interface UserMapper {
   Profile toEntity(CreateProfileDto request);
 
   SystemRoleResponseDto toResponseDto(SystemRole systemRole);
+
+  MeResponseDto toMeResponseDto(User user);
+
 }

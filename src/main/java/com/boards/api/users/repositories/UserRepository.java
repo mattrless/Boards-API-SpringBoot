@@ -12,9 +12,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
   boolean existsByEmail(String email);
   boolean existsByEmailAndIdNot(String email, Long id);
 
-  @EntityGraph(attributePaths = {"systemRole", "systemRole.permissions"})
+  @EntityGraph(attributePaths = {"profile", "systemRole", "systemRole.permissions"})
   Optional<User> findWithSystemRoleAndPermissionsByEmail(String email);
 
-  @EntityGraph(attributePaths = {"systemRole", "systemRole.permissions"})
+  @EntityGraph(attributePaths = {"profile", "systemRole", "systemRole.permissions"})
   Optional<User> findWithSystemRoleAndPermissionsById(Long id);
 }

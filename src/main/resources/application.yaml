@@ -29,3 +29,9 @@ application:
     jwt:
       secret: ${JWT_SECRET:test-secret-key-test-secret-key-123456}
       expiration: ${JWT_EXPIRES_IN:172800000}
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

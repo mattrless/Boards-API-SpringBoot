@@ -29,7 +29,11 @@ public class SecurityConfig {
           .csrf(csrf -> csrf.disable())
           .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
           .authorizeHttpRequests(auth -> auth
-              .requestMatchers("/auth/**").permitAll() // No authenticate on auth/ endpoints
+              .requestMatchers(
+                "/auth/**",
+                "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html").permitAll() // No authenticate on auth/ endpoints
               .requestMatchers(HttpMethod.POST, "/users").permitAll() // No authenticate on POST /users since it is used as register endpoint
               .anyRequest().authenticated()
           )

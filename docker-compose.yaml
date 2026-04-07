@@ -1,5 +1,5 @@
 services:
-  postgres:
+  postgres-springboot:
     image: 'postgres:15'
     restart: unless-stopped
     environment:

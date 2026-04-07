@@ -1,9 +1,12 @@
 package com.boards.api.auth.services;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.boards.api.auth.dto.LoginResponseDto;
 import com.boards.api.auth.dto.LoginUserDto;
@@ -24,12 +27,16 @@ public class AuthService {
 
   
   public LoginResponseDto login(LoginUserDto loginUserDto){
-    authManager.authenticate(
+    try {
+      authManager.authenticate(
         new UsernamePasswordAuthenticationToken(
           loginUserDto.getEmail(),
           loginUserDto.getPassword()
         )
-    );
+      );
+    } catch (BadCredentialsException e) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+    }
 
     User user = userRepository.findByEmail(loginUserDto.getEmail())
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));

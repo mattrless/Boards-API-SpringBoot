@@ -11,8 +11,12 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.boards.api.authorization.entities.SystemRole;
+import com.boards.api.boards.entities.Board;
+import com.boards.api.boards.entities.BoardMember;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @SoftDelete(columnName = "deleted_at")
@@ -44,7 +48,13 @@ public class User {
   @JoinColumn(name = "profile_id", referencedColumnName = "id", unique = true)
   private Profile profile;
 
-  @ManyToOne
-  @JoinColumn(name = "system_role_id")
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "system_role_id", nullable = false)
   private SystemRole systemRole;
+
+  @OneToMany(mappedBy = "owner")
+  private List<Board> boards = new ArrayList<>();
+
+  @OneToMany(mappedBy = "user")
+  private List<BoardMember> boardMembers = new ArrayList<>();
 }

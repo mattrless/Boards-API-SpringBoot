@@ -1,0 +1,12 @@
+package com.boards.api.boards.dtos;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class AddBoardMemberDto {
+  @Email
+  @NotBlank
+  private String email;
+}

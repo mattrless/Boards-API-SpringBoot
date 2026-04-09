@@ -4,6 +4,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.boards.api.boards.docs.board.CreateBoardDocs;
+import com.boards.api.boards.docs.board.FindBoardByIdDocs;
+import com.boards.api.boards.docs.board.FindMyBoardPermissionsDocs;
+import com.boards.api.boards.docs.board.FindMyBoardsDocs;
+import com.boards.api.boards.docs.board.RemoveBoardDocs;
+import com.boards.api.boards.docs.board.TransferOwnershipDocs;
+import com.boards.api.boards.docs.board.UpdateBoardDocs;
 import com.boards.api.boards.dtos.BoardPermissionsResponseDto;
 import com.boards.api.boards.dtos.BoardResponseDto;
 import com.boards.api.boards.dtos.CreateBoardDto;
@@ -27,15 +34,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
 @Tag(name = "Boards")
 @RestController
 @RequestMapping("/boards")
 @RequiredArgsConstructor
-public class BoardController {  
+public class BoardController {
   private final BoardService boardService;
 
   @PostMapping
+  @CreateBoardDocs
   @ResponseStatus(HttpStatus.CREATED)
   @PreAuthorize("hasAuthority('board_create')")
   public BoardResponseDto create(
@@ -46,12 +53,14 @@ public class BoardController {
   }
   
   @GetMapping("/me")
+  @FindMyBoardsDocs
   @PreAuthorize("hasAuthority('board_read')")
   public List<BoardResponseDto> findMyBoards(@AuthenticationPrincipal AuthenticatedUser currentUser) {
     return boardService.findMyBoards(currentUser.getId());
   }
   
   @GetMapping("/{boardId}")
+  @FindBoardByIdDocs
   @PreAuthorize("@boardAuthorizationService.hasBoardPermission(authentication.principal.id, #boardId, 'board_read_full_board')")
   public BoardResponseDto findOne(
     @PathVariable Long boardId,
@@ -61,6 +70,7 @@ public class BoardController {
   }
 
   @GetMapping("/{boardId}/my-permissions")
+  @FindMyBoardPermissionsDocs
   @PreAuthorize("@boardAuthorizationService.hasBoardPermission(authentication.principal.id, #boardId, 'board_read_full_board')")
   public BoardPermissionsResponseDto findMyBoardPermissions(
     @AuthenticationPrincipal AuthenticatedUser currentUser,
@@ -70,16 +80,18 @@ public class BoardController {
   }
 
   @PutMapping("/{boardId}")
+  @UpdateBoardDocs
   @PreAuthorize("@boardAuthorizationService.hasBoardPermission(authentication.principal.id, #boardId, 'board_update')")
   public BoardResponseDto update(
     @PathVariable Long boardId,
-    @RequestBody UpdateBoardDto updateBoardDto,
+    @Valid @RequestBody UpdateBoardDto updateBoardDto,
     @AuthenticationPrincipal AuthenticatedUser currentUser
   ) {
     return boardService.update(currentUser.getId(), boardId, updateBoardDto);
   }
 
   @DeleteMapping("/{boardId}")
+  @RemoveBoardDocs
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("@boardAuthorizationService.isBoardOwner(authentication.principal.id, #boardId)")
   public void remove(@PathVariable Long boardId){
@@ -87,6 +99,7 @@ public class BoardController {
   }
   
   @PutMapping("/{boardId}/transfer-ownership/{targetUserId}")
+  @TransferOwnershipDocs
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("@boardAuthorizationService.isBoardOwner(authentication.principal.id, #boardId)")
   public void transferOwnership(

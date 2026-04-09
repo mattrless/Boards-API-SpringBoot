@@ -26,4 +26,11 @@ public interface BoardMemberRepository extends JpaRepository<BoardMember, Long>{
 
   @EntityGraph(attributePaths = {"boardRole", "boardRole.permissions", "board"})
   Optional<BoardMember> findPermissionsByBoardIdAndUserId(Long boardId, Long userId);
+  
+  @EntityGraph(attributePaths = {"board", "board.owner", "boardRole"})
+  Optional<BoardMember> findByBoardIdAndUserId(Long boardId, Long userId);
+
+  @EntityGraph(attributePaths = {"user", "user.profile", "board", "board.owner", "boardRole"})
+  List<BoardMember> findByBoardId(Long boardId);
+
 }

@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.boards.api.authorization.entities.BoardRole;
+import com.boards.api.boards.dtos.BoardMemberResponseDto;
 import com.boards.api.boards.entities.Board;
 import com.boards.api.boards.entities.BoardMember;
 import com.boards.api.users.entities.User;
@@ -14,4 +15,8 @@ public interface BoardMemberMapper {
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   BoardMember toEntity(User user, BoardRole boardRole, Board board);
+
+  @Mapping(target = "user", source = "boardMember.user")
+  @Mapping(target = "boardRole", source = "boardMember.boardRole")
+  BoardMemberResponseDto toBoardMemberResponseDto(BoardMember boardMember, boolean owner);
 }

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: boards-api    
+    name: boards-api
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/boards_spring
@@ -8,7 +8,7 @@ spring:
     password: postgres  
   jpa:
     hibernate:
-      ddl-auto: validate # validate or none in production      
+      ddl-auto: validate # validate or none in production
     open-in-view: false
     properties:
       jakarta:
@@ -20,7 +20,7 @@ spring:
       "[hibernate.format_sql]": true
   flyway:
     enabled: true
-    locations: 
+    locations:
       - classpath:db/migration
       - classpath:db/seed # remove in production
       

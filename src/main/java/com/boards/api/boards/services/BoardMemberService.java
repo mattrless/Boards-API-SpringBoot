@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.boards.api.authorization.entities.BoardRole;
@@ -31,6 +32,7 @@ public class BoardMemberService {
   private final BoardRoleService boardRoleService;
   private final BoardMemberMapper boardMemberMapper;  
 
+  @Transactional
   public void addMember(Long boardId, AddBoardMemberDto addBoardMemberDto) {
     User targetUser = userRepository.findByEmail(addBoardMemberDto.getEmail())
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
@@ -59,6 +61,7 @@ public class BoardMemberService {
     }
   }
 
+  @Transactional
   public void removeMember(Long boardId, Long targetUserId, Long currentUserId) {
     BoardMember targetBoardMember = boardMemberRepository.findByBoardIdAndUserId(boardId, targetUserId)
       .orElseThrow(() -> new ResponseStatusException(
@@ -96,6 +99,7 @@ public class BoardMemberService {
     return response;
   }
 
+  @Transactional
   public void updateBoardRole(Long boardId, Long targetUserId, UpdateBoardRoleDto updateBoardRoleDto, Long currentUserId) {    
     if (targetUserId.equals(currentUserId)) throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot change own board role");
 

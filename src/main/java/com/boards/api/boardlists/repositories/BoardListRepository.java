@@ -11,4 +11,6 @@ public interface BoardListRepository extends JpaRepository<BoardList, Long>{
   Optional<BoardList> findTopByBoard_IdOrderByPositionDesc(Long boardId);
 
   List<BoardList> findByBoard_IdOrderByPositionAsc(Long boardId);
+
+  Optional<BoardList> findByIdAndBoard_Id(Long boardListId, Long boardId);
 }

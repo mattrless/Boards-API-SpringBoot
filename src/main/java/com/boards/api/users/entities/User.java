@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.boards.api.authorization.entities.SystemRole;
 import com.boards.api.boards.entities.Board;
 import com.boards.api.boards.entities.BoardMember;
+import com.boards.api.cards.entities.CardAssignment;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,4 +58,7 @@ public class User {
 
   @OneToMany(mappedBy = "user")
   private List<BoardMember> boardMembers = new ArrayList<>();
+
+  @OneToMany(mappedBy = "user")
+  private List<CardAssignment> cardAssignments = new ArrayList<>();
 }

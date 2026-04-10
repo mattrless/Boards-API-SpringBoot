@@ -183,7 +183,7 @@ public class BoardListService {
     return nextBoardListPosition.subtract(GAP);
   }
 
-  private BoardList findByIdAndBoardIdOrThrow(Long boardListId, Long boardId) {
+  public BoardList findByIdAndBoardIdOrThrow(Long boardListId, Long boardId) {
     return boardListRepository.findByIdAndBoard_Id(boardListId, boardId)
       .orElseThrow(() -> new ResponseStatusException(
         HttpStatus.NOT_FOUND,

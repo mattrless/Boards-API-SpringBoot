@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -39,18 +40,29 @@ public class GlobalExceptionHandler {
     }
 
     return ResponseEntity.status(409).body(Map.of(
-            "status", 409,
-            "error", "Conflict",
-            "message", message
-    ));
+        "status", 409,
+        "error", "Conflict",
+        "message", message
+      )
+    );
   }
 
   @ExceptionHandler(ResponseStatusException.class)
   public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException ex) {
     return ResponseEntity.status(ex.getStatusCode()).body(Map.of(
-            "status", ex.getStatusCode().value(),
-            "error", ex.getStatusCode().toString(),
-            "message", ex.getReason() != null ? ex.getReason() : "Request failed"
+        "status", ex.getStatusCode().value(),
+        "error", ex.getStatusCode().toString(),
+        "message", ex.getReason() != null ? ex.getReason() : "Request failed"
+      )
+    );
+  }
+
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+    return ResponseEntity.badRequest().body(Map.of(
+      "status", 400,
+      "error", "Bad Request",
+      "message", "Malformed JSON request"
     ));
   }
 

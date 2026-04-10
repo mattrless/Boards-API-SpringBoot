@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -32,11 +33,12 @@ public class UserService {
 
   public List<UserResponseDto> findAll() {
     return userRepository.findAll()
-            .stream()
-            .map(user -> userMapper.toResponseDto(user))
-            .toList();
+      .stream()
+      .map(user -> userMapper.toResponseDto(user))
+      .toList();
   }
 
+  @Transactional
   public UserResponseDto create(CreateUserDto createUserDto) {
     if (userRepository.existsByEmail(createUserDto.getEmail())) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
@@ -46,7 +48,8 @@ public class UserService {
       .orElseThrow(() -> new ResponseStatusException(
         HttpStatus.INTERNAL_SERVER_ERROR,
         "Default system role not found"
-      ));
+      )
+    );
 
     User user = userMapper.toEntity(createUserDto);
 
@@ -62,18 +65,18 @@ public class UserService {
     return userMapper.toResponseDto(user);
   }
 
-  public UserResponseDto update(Long id, UpdateUserDto updateUserDto){
+  @Transactional
+  public UserResponseDto update(Long id, UpdateUserDto updateUserDto) {
     User user = findUserByIdOrThrow(id);
 
     if (updateUserDto.getEmail() != null) {
-      // Update the email if it's not already used by another user.
       if (userRepository.existsByEmailAndIdNot(updateUserDto.getEmail(), id)) {
         throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
       }
       user.setEmail(updateUserDto.getEmail());
     }
 
-    if (updateUserDto.getPassword() != null) {      
+    if (updateUserDto.getPassword() != null) {
       user.setPassword(hashPassword(updateUserDto.getPassword()));
     }
 
@@ -81,20 +84,13 @@ public class UserService {
       if (user.getProfile() == null) {
         user.setProfile(new Profile());
       }
-
-      if (updateUserDto.getProfile().getName() != null) {
-        user.getProfile().setName(updateUserDto.getProfile().getName());
-      }
-
-      if (updateUserDto.getProfile().getAvatar() != null) {
-        user.getProfile().setAvatar(updateUserDto.getProfile().getAvatar());
-      }
+      userMapper.updateProfileEntity(updateUserDto.getProfile(), user.getProfile());
     }
 
-    User updatedUser = userRepository.save(user);
-    return userMapper.toResponseDto(updatedUser);
+    return userMapper.toResponseDto(userRepository.save(user));
   }
-  
+
+  @Transactional
   public void remove(Long id) {
     // Alternative
     // if (!userRepository.existsById(id)) {
@@ -112,7 +108,8 @@ public class UserService {
       .orElseThrow(() -> new ResponseStatusException(
         HttpStatus.NOT_FOUND,
         "User not found"
-    ));
+      )
+    );
 
     MeResponseDto response = userMapper.toMeResponseDto(user);
     response.setPermissions(
@@ -126,10 +123,11 @@ public class UserService {
 
   private User findUserByIdOrThrow(Long id){
     return userRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "User not found"
-          ));
+      .orElseThrow(() -> new ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "User not found"
+      )
+    );
   }
 
   private String hashPassword(String password){

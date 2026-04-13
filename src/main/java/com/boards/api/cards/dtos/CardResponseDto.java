@@ -9,5 +9,5 @@ public class CardResponseDto {
   private Long id;
   private String title;
   private String description;
-  private BigDecimal position;  
+  private BigDecimal position;
 }

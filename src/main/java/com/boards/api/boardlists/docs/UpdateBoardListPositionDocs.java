@@ -16,7 +16,25 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Update a board list position")
+@Operation(
+  summary = "Update a board list position",
+  description = """
+  Reorders a board list within the same board.
+
+  Rules:
+
+    - First position → provide nextBoardListId
+    - Last position → provide prevBoardListId
+    - Between two lists → provide both prevBoardListId and nextBoardListId
+
+  Notes:
+    - At least one of prevBoardListId or nextBoardListId must be provided
+    - If both are provided, the list will be placed between them
+    - If only prevBoardListId is provided, the list will be placed after it
+    - If only nextBoardListId is provided, the list will be placed before it
+    - Both references must belong to the same board
+  """
+)
 @SecurityRequirement(name = "bearerAuth")
 @ApiResponses(value = {
   @ApiResponse(
@@ -26,7 +44,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
   ),
   @ApiResponse(
     responseCode = "400",
-    description = "Invalid input data.",
+    description = "Invalid input data or missing required references.",
     content = @Content
   ),
   @ApiResponse(
@@ -46,7 +64,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
   ),
   @ApiResponse(
     responseCode = "409",
-    description = "Conflict: invalid target order for the requested move.",
+    description = "Conflict: invalid order or inconsistent references.",
     content = @Content
   )
 })

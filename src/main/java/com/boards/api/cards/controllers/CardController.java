@@ -4,6 +4,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.boards.api.cards.docs.cards.CreateCardDocs;
+import com.boards.api.cards.docs.cards.FindAllCardsDocs;
+import com.boards.api.cards.docs.cards.FindCardByIdDocs;
+import com.boards.api.cards.docs.cards.RemoveCardDocs;
+import com.boards.api.cards.docs.cards.UpdateCardDocs;
 import com.boards.api.cards.dtos.CardResponseDto;
 import com.boards.api.cards.dtos.CreateCardDto;
 import com.boards.api.cards.dtos.UpdateCardDto;
@@ -33,6 +38,7 @@ public class CardController {
   private final CardService cardService;
 
   @PostMapping
+  @CreateCardDocs
   @ResponseStatus(HttpStatus.CREATED)
   @PreAuthorize("@boardAuthorizationService.hasBoardPermission(authentication.principal.id, #boardId, 'card_create')")
   public CardResponseDto create(
@@ -44,6 +50,7 @@ public class CardController {
   }
 
   @GetMapping
+  @FindAllCardsDocs
   @PreAuthorize("@boardAuthorizationService.hasBoardPermission(authentication.principal.id, #boardId, 'card_read')")
   public List<CardResponseDto> findAll(
     @PathVariable Long boardId,
@@ -53,6 +60,7 @@ public class CardController {
   }
   
   @GetMapping("/{cardId}")
+  @FindCardByIdDocs
   @PreAuthorize("@boardAuthorizationService.hasBoardPermission(authentication.principal.id, #boardId, 'card_read')")
   public CardResponseDto findOne(
     @PathVariable Long boardId,
@@ -63,6 +71,7 @@ public class CardController {
   }
   
   @PutMapping("/{cardId}")
+  @UpdateCardDocs
   @PreAuthorize("@boardAuthorizationService.hasBoardPermission(authentication.principal.id, #boardId, 'card_update')")
   public CardResponseDto update(
     @PathVariable Long boardId,
@@ -74,6 +83,7 @@ public class CardController {
   }
 
   @DeleteMapping("/{cardId}")
+  @RemoveCardDocs
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("@boardAuthorizationService.hasBoardPermission(authentication.principal.id, #boardId, 'card_delete')")
   public void delete(

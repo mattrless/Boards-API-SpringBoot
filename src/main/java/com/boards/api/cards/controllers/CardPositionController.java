@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.boards.api.cards.docs.cards.UpdateCardPositionDocs;
 import com.boards.api.cards.dtos.CardPositionUpdatedResponseDto;
 import com.boards.api.cards.dtos.UpdateCardPositionDto;
 import com.boards.api.cards.services.CardService;
@@ -23,6 +24,7 @@ public class CardPositionController {
   private final CardService cardService;
 
   @PutMapping("/{cardId}/position")
+  @UpdateCardPositionDocs
   @PreAuthorize("@boardAuthorizationService.hasBoardPermission(authentication.principal.id, #boardId, 'card_update')")
   public CardPositionUpdatedResponseDto updatePosition(
     @PathVariable Long boardId,

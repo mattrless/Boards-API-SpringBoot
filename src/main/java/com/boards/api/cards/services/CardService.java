@@ -188,7 +188,7 @@ public class CardService {
     for (Card card : cards) {
       card.setPosition(position);
       position = position.add(GAP);
-    }    
+    }
 
     cardRepository.saveAll(cards);
   }

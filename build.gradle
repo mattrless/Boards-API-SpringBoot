@@ -64,6 +64,10 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// langchain4j - Gemini AI
+	implementation 'dev.langchain4j:langchain4j-spring-boot-starter:1.13.0-beta23'
+	implementation 'dev.langchain4j:langchain4j-google-ai-gemini-spring-boot-starter:1.13.0-beta23'
+
 }
 
 tasks.named('test') {

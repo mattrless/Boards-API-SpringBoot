@@ -11,4 +11,6 @@ public interface CardAssignmentRepository extends JpaRepository<CardAssignment, 
   List<CardAssignment> findByCard_Id(Long cardId);
 
   Optional<CardAssignment> findByCard_IdAndUser_Id(Long cardId, Long userId);
+
+  List<CardAssignment> findByUser_Id(Long userId);
 }

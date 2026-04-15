@@ -18,10 +18,13 @@ import com.boards.api.boards.entities.BoardMember;
 import com.boards.api.boards.mappers.BoardMemberMapper;
 import com.boards.api.boards.repositories.BoardMemberRepository;
 import com.boards.api.boards.repositories.BoardRepository;
+import com.boards.api.cards.entities.CardAssignment;
+import com.boards.api.cards.repositories.CardAssignmentRepository;
 import com.boards.api.common.exceptions.BoardNotFoundException;
 import com.boards.api.common.exceptions.UserNotFoundException;
 import com.boards.api.users.entities.User;
 import com.boards.api.users.repositories.UserRepository;
+// import com.boards.api.websockets.services.BoardEventsService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,8 +34,13 @@ public class BoardMemberService {
   private final UserRepository userRepository;
   private final BoardRepository boardRepository;
   private final BoardMemberRepository boardMemberRepository;
+  private final CardAssignmentRepository cardAssignmentRepository;
+
   private final BoardRoleService boardRoleService;
-  private final BoardMemberMapper boardMemberMapper;  
+
+  private final BoardMemberMapper boardMemberMapper;
+  
+  // private final BoardEventsService boardEventsService;
 
   @Transactional
   public void addMember(Long boardId, AddBoardMemberDto addBoardMemberDto) {
@@ -55,6 +63,7 @@ public class BoardMemberService {
 
     try {
       boardMemberRepository.save(boardMember);
+      // boardEventsService.emitBoardsChanged(targetUser.getId());
     } catch (DataIntegrityViolationException e) {
       throw new ResponseStatusException(
         HttpStatus.CONFLICT,
@@ -81,6 +90,9 @@ public class BoardMemberService {
     if (targetBoardMember.getBoardRole().getName().equals("admin") && !currentUserIsOwner) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot remove another admin");
     }
+
+    List<CardAssignment> cardAssignments = cardAssignmentRepository.findByUser_Id(targetUserId);
+    cardAssignmentRepository.deleteAll(cardAssignments);
 
     boardMemberRepository.delete(targetBoardMember);
   }

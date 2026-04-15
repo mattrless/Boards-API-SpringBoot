@@ -34,7 +34,6 @@ out/
 /.nb-gradle/
 
 ### VS Code ###
-.vscode/
 .codex
 
 migration_content.sql

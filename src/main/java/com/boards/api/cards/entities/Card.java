@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.boards.api.boardlists.entities.BoardList;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -42,6 +43,6 @@ public class Card {
   @JoinColumn(name = "board_list_id", nullable = false)
   private BoardList boardList;
 
-  @OneToMany(mappedBy = "card")
+  @OneToMany(mappedBy = "card", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<CardAssignment> cardAssignments = new ArrayList<>();
 }

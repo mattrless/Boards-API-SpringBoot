@@ -18,6 +18,7 @@ import com.boards.api.boardlists.mappers.BoardListMapper;
 import com.boards.api.boardlists.repositories.BoardListRepository;
 import com.boards.api.boards.entities.Board;
 import com.boards.api.boards.repositories.BoardRepository;
+import com.boards.api.common.exceptions.BoardNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,11 +36,7 @@ public class BoardListService {
   @Transactional
   public BoardListResponseDto create(Long boardId, CreateBoardListDto createBoardListDto) {
     Board board = boardRepository.findById(boardId)
-      .orElseThrow(() -> new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "Board not found"
-      )
-    );
+      .orElseThrow(BoardNotFoundException::new);
 
     BigDecimal newPosition = boardListRepository.findTopByBoard_IdOrderByPositionDesc(boardId)
       .map(bl -> bl.getPosition().add(GAP))

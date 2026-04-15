@@ -14,6 +14,7 @@ import com.boards.api.cards.entities.Card;
 import com.boards.api.cards.entities.CardAssignment;
 import com.boards.api.cards.repositories.CardAssignmentRepository;
 import com.boards.api.cards.repositories.CardRepository;
+import com.boards.api.common.exceptions.CardNotFoundException;
 import com.boards.api.users.dtos.UserResponseDto;
 import com.boards.api.users.mappers.UserMapper;
 
@@ -30,11 +31,7 @@ public class CardAssignmentService {
   @Transactional
   public void addMember(Long boardId, Long cardId, CreateCardAssignmentDto createCardAssignmentDto, Long currentUserId) {
     Card card = cardRepository.findByIdAndBoardList_Board_Id(cardId, boardId)
-      .orElseThrow(() -> new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "Card not found"  
-      )
-    );
+      .orElseThrow(CardNotFoundException::new);
 
     Long targetUserId = createCardAssignmentDto.getUserId();
 
@@ -73,11 +70,7 @@ public class CardAssignmentService {
 
   public List<UserResponseDto> findAll(Long boardId, Long cardId) {
     cardRepository.findByIdAndBoardList_Board_Id(cardId, boardId)
-      .orElseThrow(() -> new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "Card not found"
-      )
-    );
+      .orElseThrow(CardNotFoundException::new);
     
     List<CardAssignment> cardAssignments = cardAssignmentRepository.findByCard_Id(cardId);
 
@@ -99,11 +92,7 @@ public class CardAssignmentService {
 
     // Validate card belongs to board
     cardRepository.findByIdAndBoardList_Board_Id(cardId, boardId)
-      .orElseThrow(() -> new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "Card not found"
-      )
-    );
+      .orElseThrow(CardNotFoundException::new);
 
     boolean currentUserHasMemberRole = "member".equals(currentUserMembership.getBoardRole().getName());
 

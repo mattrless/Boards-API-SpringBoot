@@ -19,6 +19,7 @@ import com.boards.api.cards.dtos.UpdateCardPositionDto;
 import com.boards.api.cards.entities.Card;
 import com.boards.api.cards.mappers.CardMapper;
 import com.boards.api.cards.repositories.CardRepository;
+import com.boards.api.common.exceptions.CardNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -83,11 +84,7 @@ public class CardService {
   @Transactional
   public CardPositionUpdatedResponseDto updatePosition(Long boardId, Long cardId, UpdateCardPositionDto updateCardPositionDto) {
     Card targetCard = cardRepository.findByIdAndBoardList_Board_Id(cardId, boardId)
-      .orElseThrow(() -> new ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          "Card not found"
-        )
-      );
+      .orElseThrow(CardNotFoundException::new);
     
     Long sourceBoardListId = targetCard.getBoardList().getId();
 
@@ -213,10 +210,6 @@ public class CardService {
     // Validate list belongs to board and card belongs to list
     boardListService.findByIdAndBoardIdOrThrow(boardListId, boardId);
     return cardRepository.findByIdAndBoardList_Id(cardId, boardListId)
-      .orElseThrow(() -> new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "Card not found"
-      )
-    );
+      .orElseThrow(CardNotFoundException::new);
   }
 }

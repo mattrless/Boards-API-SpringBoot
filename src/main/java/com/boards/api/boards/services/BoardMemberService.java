@@ -18,6 +18,8 @@ import com.boards.api.boards.entities.BoardMember;
 import com.boards.api.boards.mappers.BoardMemberMapper;
 import com.boards.api.boards.repositories.BoardMemberRepository;
 import com.boards.api.boards.repositories.BoardRepository;
+import com.boards.api.common.exceptions.BoardNotFoundException;
+import com.boards.api.common.exceptions.UserNotFoundException;
 import com.boards.api.users.entities.User;
 import com.boards.api.users.repositories.UserRepository;
 
@@ -35,7 +37,7 @@ public class BoardMemberService {
   @Transactional
   public void addMember(Long boardId, AddBoardMemberDto addBoardMemberDto) {
     User targetUser = userRepository.findByEmail(addBoardMemberDto.getEmail())
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+      .orElseThrow(UserNotFoundException::new);
 
     if(boardMemberRepository.existsByBoardIdAndUserId(boardId, targetUser.getId())){
       throw new ResponseStatusException(
@@ -47,7 +49,7 @@ public class BoardMemberService {
     BoardRole defaultBoardRole = boardRoleService.findByNameOrThrow("member");
 
     Board targetBoard = boardRepository.findById(boardId)
-      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found"));;
+      .orElseThrow(BoardNotFoundException::new);
 
     BoardMember boardMember = boardMemberMapper.toEntity(targetUser, defaultBoardRole, targetBoard);
 

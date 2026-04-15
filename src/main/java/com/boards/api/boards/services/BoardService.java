@@ -21,6 +21,7 @@ import com.boards.api.boards.mappers.BoardMapper;
 import com.boards.api.boards.mappers.BoardMemberMapper;
 import com.boards.api.boards.repositories.BoardMemberRepository;
 import com.boards.api.boards.repositories.BoardRepository;
+import com.boards.api.common.exceptions.BoardNotFoundException;
 import com.boards.api.users.entities.User;
 import com.boards.api.users.repositories.UserRepository;
 
@@ -70,11 +71,7 @@ public class BoardService {
 
   public BoardResponseDto findOne(Long boardId, Long userId) {
     Board board = boardRepository.findById(boardId)
-      .orElseThrow(() -> new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "Board not found"
-      )
-    );
+      .orElseThrow(BoardNotFoundException::new);
 
     return toBoardResponseDto(board, userId);
   }
@@ -102,11 +99,7 @@ public class BoardService {
 
   public BoardResponseDto update(Long currentUserId, Long boardId, UpdateBoardDto updateBoardDto) {
     Board board = boardRepository.findById(boardId)
-      .orElseThrow(() -> new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "Board not found"
-      )
-    );
+      .orElseThrow(BoardNotFoundException::new);
 
     board.setName(updateBoardDto.getName());
 
@@ -117,11 +110,7 @@ public class BoardService {
 
   public void remove(Long boardId) {
     Board board = boardRepository.findById(boardId)
-      .orElseThrow(() -> new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "Board not found"
-      )
-    );
+      .orElseThrow(BoardNotFoundException::new);
 
     boardRepository.delete(board);
   }
@@ -129,11 +118,7 @@ public class BoardService {
   @Transactional
   public void transferOwnership(Long boardId, Long targetUserId) {
     Board targetBoard = boardRepository.findById(boardId)
-      .orElseThrow(() -> new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "Board not found"
-      )
-    );
+      .orElseThrow(BoardNotFoundException::new);
 
     if (targetBoard.getOwner().getId().equals(targetUserId)) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Target user is already the owner");

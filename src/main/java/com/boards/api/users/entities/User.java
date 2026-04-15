@@ -56,9 +56,9 @@ public class User {
   @OneToMany(mappedBy = "owner")
   private List<Board> boards = new ArrayList<>();
 
-  @OneToMany(mappedBy = "user")
+  @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<BoardMember> boardMembers = new ArrayList<>();
 
-  @OneToMany(mappedBy = "user")
+  @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<CardAssignment> cardAssignments = new ArrayList<>();
 }

@@ -2,6 +2,8 @@ package com.boards.api.users.services;
 
 import com.boards.api.authorization.entities.SystemRole;
 import com.boards.api.authorization.repositories.SystemRoleRepository;
+import com.boards.api.boards.repositories.BoardRepository;
+import com.boards.api.common.exceptions.UserNotFoundException;
 import com.boards.api.users.dtos.CreateUserDto;
 import com.boards.api.users.dtos.MeResponseDto;
 import com.boards.api.users.dtos.UpdateUserDto;
@@ -25,11 +27,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor // To generate constructor with final properties
 public class UserService {
+  private final BoardRepository boardRepository;
   private final UserRepository userRepository;
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
   private final SystemRoleRepository systemRoleRepository;
-
 
   public List<UserResponseDto> findAll() {
     return userRepository.findAll()
@@ -99,6 +101,13 @@ public class UserService {
 
     // userRepository.deleteById(id);
 
+    if (boardRepository.existsByOwner_Id(id)) {
+      throw new ResponseStatusException(
+        HttpStatus.CONFLICT,
+        "Can't delete user, transfer ownership of your owned boards"
+      );
+    }
+
     User user = findUserByIdOrThrow(id);
     userRepository.delete(user);
   }
@@ -122,12 +131,7 @@ public class UserService {
   }
 
   private User findUserByIdOrThrow(Long id){
-    return userRepository.findById(id)
-      .orElseThrow(() -> new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "User not found"
-      )
-    );
+    return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
   }
 
   private String hashPassword(String password){

@@ -6,4 +6,5 @@ import com.boards.api.boards.entities.Board;
 
 public interface BoardRepository extends JpaRepository<Board, Long>{
   boolean existsByIdAndOwnerId(Long boardId, Long ownerId);
+  boolean existsByOwner_Id(Long ownerId);
 }

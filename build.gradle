@@ -68,6 +68,9 @@ dependencies {
 	implementation 'dev.langchain4j:langchain4j-spring-boot-starter:1.13.0-beta23'
 	implementation 'dev.langchain4j:langchain4j-google-ai-gemini-spring-boot-starter:1.13.0-beta23'
 
+	// WebSockets
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+  testImplementation 'org.springframework.boot:spring-boot-starter-websocket-test'
 }
 
 tasks.named('test') {

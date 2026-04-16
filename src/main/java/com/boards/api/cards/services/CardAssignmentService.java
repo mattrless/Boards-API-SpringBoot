@@ -2,6 +2,7 @@ package com.boards.api.cards.services;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import com.boards.api.cards.repositories.CardRepository;
 import com.boards.api.common.exceptions.CardNotFoundException;
 import com.boards.api.users.dtos.UserResponseDto;
 import com.boards.api.users.mappers.UserMapper;
+import com.boards.api.websockets.events.CardWsEvent;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +29,7 @@ public class CardAssignmentService {
   private final CardRepository cardRepository;
   private final BoardMemberRepository boardMemberRepository;
   private final UserMapper userMapper;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   @Transactional
   public void addMember(Long boardId, Long cardId, CreateCardAssignmentDto createCardAssignmentDto, Long currentUserId) {
@@ -51,7 +54,7 @@ public class CardAssignmentService {
     boolean currentUserHasMemberRole = "member".equals(currentUserMembership.getBoardRole().getName());
 
     if (currentUserHasMemberRole && !currentUserId.equals(targetUserId)) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Members can only add themselves from a card");
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Members can only add themselves to cards");
     }
     
     BoardMember targetMember = boardMemberRepository.findDetailedByBoardIdAndUserId(boardId, targetUserId)
@@ -66,6 +69,11 @@ public class CardAssignmentService {
     cardAssignment.setUser(targetMember.getUser());
 
     cardAssignmentRepository.save(cardAssignment);
+
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+    applicationEventPublisher.publishEvent(
+      new CardWsEvent("card:membersUpdated", boardMembers, boardId, cardId)
+    );
   }
 
   public List<UserResponseDto> findAll(Long boardId, Long cardId) {
@@ -108,5 +116,10 @@ public class CardAssignmentService {
     );
 
     cardAssignmentRepository.delete(targetCardAssignment);
+
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+    applicationEventPublisher.publishEvent(
+      new CardWsEvent("card:membersUpdated", boardMembers, boardId, cardId)
+    ); 
   }
 }

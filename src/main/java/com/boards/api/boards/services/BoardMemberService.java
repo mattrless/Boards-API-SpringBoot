@@ -2,6 +2,7 @@ package com.boards.api.boards.services;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,8 @@ import com.boards.api.common.exceptions.BoardNotFoundException;
 import com.boards.api.common.exceptions.UserNotFoundException;
 import com.boards.api.users.entities.User;
 import com.boards.api.users.repositories.UserRepository;
-// import com.boards.api.websockets.services.BoardEventsService;
+import com.boards.api.websockets.events.BoardMemberWsEvent;
+import com.boards.api.websockets.events.BoardWsEvent;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,7 +42,7 @@ public class BoardMemberService {
 
   private final BoardMemberMapper boardMemberMapper;
   
-  // private final BoardEventsService boardEventsService;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   @Transactional
   public void addMember(Long boardId, AddBoardMemberDto addBoardMemberDto) {
@@ -63,7 +65,15 @@ public class BoardMemberService {
 
     try {
       boardMemberRepository.save(boardMember);
-      // boardEventsService.emitBoardsChanged(targetUser.getId());
+
+      List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+
+      applicationEventPublisher.publishEvent(
+        new BoardWsEvent("board:membersUpdated", boardMembers, boardId)
+      );
+      applicationEventPublisher.publishEvent(
+        new BoardMemberWsEvent("board:memberAdded", targetUser.getId(), boardId)        
+      );
     } catch (DataIntegrityViolationException e) {
       throw new ResponseStatusException(
         HttpStatus.CONFLICT,
@@ -91,10 +101,19 @@ public class BoardMemberService {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot remove another admin");
     }
 
-    List<CardAssignment> cardAssignments = cardAssignmentRepository.findByUser_Id(targetUserId);
+    List<CardAssignment> cardAssignments = cardAssignmentRepository.findByUser_IdAndCard_BoardList_Board_Id(targetUserId, boardId);
     cardAssignmentRepository.deleteAll(cardAssignments);
 
     boardMemberRepository.delete(targetBoardMember);
+
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+
+    applicationEventPublisher.publishEvent(
+      new BoardWsEvent("board:membersUpdated", boardMembers, boardId)
+    );
+    applicationEventPublisher.publishEvent(
+      new BoardMemberWsEvent("board:memberRemoved",targetUserId, boardId)
+    );
   }
 
   public List<BoardMemberResponseDto> findBoardMembers(Long boardId) {
@@ -114,7 +133,7 @@ public class BoardMemberService {
   }
 
   @Transactional
-  public void updateBoardRole(Long boardId, Long targetUserId, UpdateBoardRoleDto updateBoardRoleDto, Long currentUserId) {    
+  public void updateBoardRole(Long boardId, Long targetUserId, UpdateBoardRoleDto updateBoardRoleDto, Long currentUserId) {
     if (targetUserId.equals(currentUserId)) throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot change own board role");
 
     BoardMember targetBoardMember = boardMemberRepository.findByBoardIdAndUserId(boardId, targetUserId)
@@ -146,5 +165,14 @@ public class BoardMemberService {
 
     targetBoardMember.setBoardRole(targetBoardRole);
     boardMemberRepository.save(targetBoardMember);
+    
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+
+    applicationEventPublisher.publishEvent(
+      new BoardWsEvent("board:membersUpdated", boardMembers, boardId)
+    );    
+    applicationEventPublisher.publishEvent(
+      new BoardMemberWsEvent("board:memberRoleUpdated",targetUserId, boardId)
+    ); 
   }
 }

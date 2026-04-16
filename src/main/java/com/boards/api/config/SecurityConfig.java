@@ -35,7 +35,10 @@ public class SecurityConfig {
                 "/auth/**",
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
-                "/swagger-ui.html").permitAll() // No authenticate on auth/ endpoints
+                "/swagger-ui.html",
+                "/ws",
+                "/ws/**"
+            ).permitAll() // No authenticate on auth/ endpoints
               .requestMatchers(HttpMethod.POST, "/users").permitAll() // No authenticate on POST /users since it is used as register endpoint
               .anyRequest().authenticated()
           )

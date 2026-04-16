@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,12 @@ import com.boards.api.cards.dtos.UpdateCardPositionDto;
 import com.boards.api.cards.entities.Card;
 import com.boards.api.cards.mappers.CardMapper;
 import com.boards.api.cards.repositories.CardRepository;
+import com.boards.api.boards.entities.BoardMember;
+import com.boards.api.boards.repositories.BoardMemberRepository;
+import com.boards.api.boards.repositories.BoardRepository;
+import com.boards.api.common.exceptions.BoardNotFoundException;
 import com.boards.api.common.exceptions.CardNotFoundException;
+import com.boards.api.websockets.events.CardWsEvent;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +35,9 @@ public class CardService {
   private final CardRepository cardRepository;
   private final CardMapper cardMapper;
   private final BoardListService boardListService;
+  private final BoardRepository boardRepository;
+  private final BoardMemberRepository boardMemberRepository;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   private static final BigDecimal GAP = BigDecimal.valueOf(1000);
   private static final BigDecimal MIN_POSITION_GAP = BigDecimal.ONE;
@@ -36,6 +45,9 @@ public class CardService {
 
   @Transactional
   public CardResponseDto create(CreateCardDto createCardDto, Long boardId, Long boardListId) {
+    boardRepository.findWithLockById(boardId)
+      .orElseThrow(BoardNotFoundException::new);
+
     BoardList boardList = boardListService.findByIdAndBoardIdOrThrow(boardListId, boardId);
     Card card = cardMapper.toEntity(createCardDto);
 
@@ -47,6 +59,12 @@ public class CardService {
     card.setBoardList(boardList);
 
     Card savedCard = cardRepository.save(card);
+
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+    applicationEventPublisher.publishEvent(
+      new CardWsEvent("card:created", boardMembers, boardId, savedCard.getId())
+    );
+
     return cardMapper.toResponseDto(savedCard);
   }
 
@@ -72,17 +90,34 @@ public class CardService {
 
     cardMapper.updateEntity(updateCardDto, card);
 
-    return cardMapper.toResponseDto(cardRepository.save(card));
+    Card updatedCard = cardRepository.save(card);
+
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+    applicationEventPublisher.publishEvent(
+      new CardWsEvent("card:updated", boardMembers, boardId, updatedCard.getId())
+    );
+
+    return cardMapper.toResponseDto(updatedCard);
   }
 
   @Transactional
   public void delete(Long boardId, Long boardListId, Long cardId) {
     Card card = findByIdAndBoardListIdOrThrow(cardId, boardListId, boardId);
+
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);    
+
     cardRepository.delete(card);
+
+    applicationEventPublisher.publishEvent(
+      new CardWsEvent("card:removed", boardMembers, boardId, cardId)
+    );
   }
 
   @Transactional
   public CardPositionUpdatedResponseDto updatePosition(Long boardId, Long cardId, UpdateCardPositionDto updateCardPositionDto) {
+    boardRepository.findWithLockById(boardId)
+      .orElseThrow(BoardNotFoundException::new);
+
     Card targetCard = cardRepository.findByIdAndBoardList_Board_Id(cardId, boardId)
       .orElseThrow(CardNotFoundException::new);
     
@@ -123,6 +158,11 @@ public class CardService {
     targetCard.setPosition(newPosition);
 
     Card updatedCard = cardRepository.save(targetCard);
+
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+    applicationEventPublisher.publishEvent(
+      new CardWsEvent("card:moved", boardMembers, boardId, updatedCard.getId())
+    );
 
     return cardMapper.toUpdatedPositionResponseDto(updatedCard, targetBoardList, sourceBoardListId);
   }

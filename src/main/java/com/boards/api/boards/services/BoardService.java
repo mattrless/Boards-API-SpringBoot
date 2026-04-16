@@ -4,6 +4,7 @@ package com.boards.api.boards.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import com.boards.api.boards.repositories.BoardRepository;
 import com.boards.api.common.exceptions.BoardNotFoundException;
 import com.boards.api.users.entities.User;
 import com.boards.api.users.repositories.UserRepository;
+import com.boards.api.websockets.events.BoardWsEvent;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +40,8 @@ public class BoardService {
 
   private final BoardMemberMapper boardMemberMapper;
   private final BoardMapper boardMapper;
+
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   @Transactional
   public BoardResponseDto create(Long ownerId, CreateBoardDto createBoardDto) {
@@ -97,6 +101,7 @@ public class BoardService {
     return response;
   }
 
+  @Transactional
   public BoardResponseDto update(Long currentUserId, Long boardId, UpdateBoardDto updateBoardDto) {
     Board board = boardRepository.findById(boardId)
       .orElseThrow(BoardNotFoundException::new);
@@ -105,14 +110,27 @@ public class BoardService {
 
     Board updatedBoard = boardRepository.save(board);
 
+    // notify the change to board members
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+    applicationEventPublisher.publishEvent(
+      new BoardWsEvent("board:updated", boardMembers, boardId)
+    );
+
     return toBoardResponseDto(updatedBoard, currentUserId);
   }
 
+  @Transactional
   public void remove(Long boardId) {
     Board board = boardRepository.findById(boardId)
       .orElseThrow(BoardNotFoundException::new);
 
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+
     boardRepository.delete(board);
+    
+    applicationEventPublisher.publishEvent(
+      new BoardWsEvent("board:removed", boardMembers, boardId)
+    );
   }
 
   @Transactional
@@ -136,10 +154,15 @@ public class BoardService {
 
       targetUserMembership.setBoardRole(adminBoardRole);
       boardMemberRepository.save(targetUserMembership);
-    }    
-    // Change board owner and let previous owner as admin
+    }
+    // Change board owner and let previous owner as admin (since he already was an admin)
     targetBoard.setOwner(targetUserMembership.getUser());
     boardRepository.save(targetBoard);
+
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+    applicationEventPublisher.publishEvent(
+      new BoardWsEvent("board:ownershipTransferred", boardMembers, boardId)
+    );
   }
 
   private BoardResponseDto toBoardResponseDto(Board board, Long currentUserId) {

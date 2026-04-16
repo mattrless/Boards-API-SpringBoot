@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +18,11 @@ import com.boards.api.boardlists.entities.BoardList;
 import com.boards.api.boardlists.mappers.BoardListMapper;
 import com.boards.api.boardlists.repositories.BoardListRepository;
 import com.boards.api.boards.entities.Board;
+import com.boards.api.boards.entities.BoardMember;
+import com.boards.api.boards.repositories.BoardMemberRepository;
 import com.boards.api.boards.repositories.BoardRepository;
 import com.boards.api.common.exceptions.BoardNotFoundException;
+import com.boards.api.websockets.events.BoardListWsEvent;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,11 +35,15 @@ public class BoardListService {
 
   private final BoardListRepository boardListRepository;
   private final BoardRepository boardRepository;
+  private final BoardMemberRepository boardMemberRepository;
+
   private final BoardListMapper boardListMapper;
+
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   @Transactional
   public BoardListResponseDto create(Long boardId, CreateBoardListDto createBoardListDto) {
-    Board board = boardRepository.findById(boardId)
+    Board board = boardRepository.findWithLockById(boardId)
       .orElseThrow(BoardNotFoundException::new);
 
     BigDecimal newPosition = boardListRepository.findTopByBoard_IdOrderByPositionDesc(boardId)
@@ -48,6 +56,11 @@ public class BoardListService {
     boardList.setBoard(board);
 
     BoardList savedBoardList = boardListRepository.save(boardList);
+
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+    applicationEventPublisher.publishEvent(
+      new BoardListWsEvent("list:created", boardMembers, boardId, savedBoardList.getId())
+    );
 
     return boardListMapper.toResponseDto(savedBoardList);
   }
@@ -70,17 +83,33 @@ public class BoardListService {
     BoardList boardList = findByIdAndBoardIdOrThrow(boardListId, boardId);
     boardList.setTitle(updateBoardListDto.getTitle());
     BoardList updatedBoardList = boardListRepository.save(boardList);
+
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+    applicationEventPublisher.publishEvent(
+      new BoardListWsEvent("list:updated", boardMembers, boardId, updatedBoardList.getId())
+    );
+
     return boardListMapper.toResponseDto(updatedBoardList);
   }
 
   @Transactional
   public void delete(Long boardId, Long boardListId) {
     BoardList boardList = findByIdAndBoardIdOrThrow(boardListId, boardId);
+
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);    
+
     boardListRepository.delete(boardList);
+
+    applicationEventPublisher.publishEvent(
+      new BoardListWsEvent("list:removed", boardMembers, boardId, boardListId)
+    );
   }
 
   @Transactional
   public BoardListResponseDto updatePosition(Long boardId, Long boardListId, UpdateBoardListPositionDto updateBoardListPositionDto) {
+    boardRepository.findWithLockById(boardId)
+      .orElseThrow(BoardNotFoundException::new);
+
     Long prevBoardListId = updateBoardListPositionDto.getPrevBoardListId();
     Long nextBoardListId = updateBoardListPositionDto.getNextBoardListId();
 
@@ -104,6 +133,11 @@ public class BoardListService {
 
     boardList.setPosition(newPosition);
     BoardList updatedBoardList = boardListRepository.save(boardList);
+
+    List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
+    applicationEventPublisher.publishEvent(
+      new BoardListWsEvent("list:moved", boardMembers, boardId, boardListId)
+    );
 
     return boardListMapper.toResponseDto(updatedBoardList);
   }

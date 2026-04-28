@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Get the authenticated user profile")
+@Operation(operationId = "findMe", summary = "Get the authenticated user profile")
 @SecurityRequirement(name = "bearerAuth")
 @ApiResponses(value = {
   @ApiResponse(

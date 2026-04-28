@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Get a specific card by ID")
+@Operation(operationId = "findCardById", summary = "Get a specific card by ID")
 @SecurityRequirement(name = "bearerAuth")
 @ApiResponses(value = {
   @ApiResponse(

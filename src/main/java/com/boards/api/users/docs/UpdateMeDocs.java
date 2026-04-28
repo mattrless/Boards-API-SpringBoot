@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Update the authenticated user profile")
+@Operation(operationId = "updateMe", summary = "Update the authenticated user profile")
 @SecurityRequirement(name = "bearerAuth")
 @ApiResponses(value = {
   @ApiResponse(

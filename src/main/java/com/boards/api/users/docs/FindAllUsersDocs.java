@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Retrieve all users")
+@Operation(operationId = "findAllUsers", summary = "Retrieve all users")
 @SecurityRequirement(name = "bearerAuth")
 @ApiResponses(value = {
   @ApiResponse(

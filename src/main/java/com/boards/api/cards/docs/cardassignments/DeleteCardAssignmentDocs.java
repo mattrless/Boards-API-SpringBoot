@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
+  operationId = "deleteCardAssignment",
   summary = "Remove a user from a card",
   description = "Removes a user assignment from a card. Members can only remove themselves."
 )

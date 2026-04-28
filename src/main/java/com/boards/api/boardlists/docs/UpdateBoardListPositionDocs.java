@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
+  operationId = "updateBoardListPosition",
   summary = "Update a board list position",
   description = """
   Reorders a board list within the same board.

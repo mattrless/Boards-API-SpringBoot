@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
+  operationId = "login",
   summary = "Authenticate a user",
   requestBody = @RequestBody(
     required = true,

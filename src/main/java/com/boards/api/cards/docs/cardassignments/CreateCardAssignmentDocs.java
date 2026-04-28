@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
+  operationId = "createCardAssignment",
   summary = "Assign a user to a card",
   description = "Allows assigning a board member to a card. Members can only assign themselves."
 )

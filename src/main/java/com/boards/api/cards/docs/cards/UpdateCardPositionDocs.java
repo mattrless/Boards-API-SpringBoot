@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
+  operationId = "updateCardPosition",
   summary = "Update a card position",
   description = """
   Moves a card within the same list or to another list.

@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
+  operationId = "findCardAssignments",
   summary = "Get all users assigned to a card",
   description = "Returns a list of users assigned to the specified card."
 )

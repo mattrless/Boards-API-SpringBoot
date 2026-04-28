@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Create a new user")
+@Operation(operationId = "createUser", summary = "Create a new user")
 @ApiResponses(value = {
   @ApiResponse(
     responseCode = "201",

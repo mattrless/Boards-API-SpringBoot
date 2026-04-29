@@ -25,6 +25,7 @@ import com.boards.api.boards.repositories.BoardRepository;
 import com.boards.api.common.exceptions.BoardNotFoundException;
 import com.boards.api.users.entities.User;
 import com.boards.api.users.repositories.UserRepository;
+import com.boards.api.websockets.events.BoardMemberWsEvent;
 import com.boards.api.websockets.events.BoardWsEvent;
 
 import lombok.RequiredArgsConstructor;
@@ -163,6 +164,9 @@ public class BoardService {
     applicationEventPublisher.publishEvent(
       new BoardWsEvent("board:ownershipTransferred", boardMembers, boardId)
     );
+    applicationEventPublisher.publishEvent(
+      new BoardMemberWsEvent("board:memberRoleUpdated",targetUserId, boardId)
+    ); 
   }
 
   private BoardResponseDto toBoardResponseDto(Board board, Long currentUserId) {

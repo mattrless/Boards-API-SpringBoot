@@ -9,4 +9,7 @@ public class CardChangedDto {
   private String event;
   private Long boardId;
   private Long cardId;
+  private Long targetBoardList;
+  private Long sourceBoardListId;
+  private Long userId;
 }

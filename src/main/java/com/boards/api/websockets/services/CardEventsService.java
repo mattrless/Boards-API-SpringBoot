@@ -22,7 +22,7 @@ public class CardEventsService {
       messagingTemplate.convertAndSendToUser(
         member.getUser().getId().toString(),
         "/queue/boards",
-        new CardChangedDto(event.event(), event.boardId(), event.cardId())
+        new CardChangedDto(event.event(), event.boardId(), event.cardId(), event.targetBoardList(), event.sourceBoardListId(), event.userId())
       );
     }
   }

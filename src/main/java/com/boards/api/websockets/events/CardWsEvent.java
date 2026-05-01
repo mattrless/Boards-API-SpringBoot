@@ -8,5 +8,8 @@ public record CardWsEvent(
   String event,
   List<BoardMember> boardMembers,
   Long boardId,
-  Long cardId
+  Long cardId,
+  Long targetBoardList,
+  Long sourceBoardListId,
+  Long userId
 ) {}

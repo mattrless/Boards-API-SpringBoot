@@ -72,7 +72,7 @@ public class CardAssignmentService {
 
     List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
     applicationEventPublisher.publishEvent(
-      new CardWsEvent("card:membersUpdated", boardMembers, boardId, cardId)
+      new CardWsEvent("card:membersUpdated", boardMembers, boardId, cardId, null, null, null)
     );
   }
 
@@ -119,7 +119,7 @@ public class CardAssignmentService {
 
     List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
     applicationEventPublisher.publishEvent(
-      new CardWsEvent("card:membersUpdated", boardMembers, boardId, cardId)
+      new CardWsEvent("card:membersUpdated", boardMembers, boardId, cardId, null, null, null)
     ); 
   }
 }

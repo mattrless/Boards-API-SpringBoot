@@ -62,7 +62,7 @@ public class CardService {
 
     List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
     applicationEventPublisher.publishEvent(
-      new CardWsEvent("card:created", boardMembers, boardId, savedCard.getId(), null, null, null)
+      new CardWsEvent("card:created", boardMembers, boardId, savedCard.getId(), boardList.getId(), null, null)
     );
 
     return cardMapper.toResponseDto(savedCard);

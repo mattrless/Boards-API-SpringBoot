@@ -94,7 +94,7 @@ public class CardService {
 
     List<BoardMember> boardMembers = boardMemberRepository.findByBoardId(boardId);
     applicationEventPublisher.publishEvent(
-      new CardWsEvent("card:updated", boardMembers, boardId, updatedCard.getId(), null, null, null)
+      new CardWsEvent("card:updated", boardMembers, boardId, updatedCard.getId(), boardListId, null, null)
     );
 
     return cardMapper.toResponseDto(updatedCard);
@@ -109,7 +109,7 @@ public class CardService {
     cardRepository.delete(card);
 
     applicationEventPublisher.publishEvent(
-      new CardWsEvent("card:removed", boardMembers, boardId, cardId, null, null, null)
+      new CardWsEvent("card:removed", boardMembers, boardId, cardId, boardListId, null, null)
     );
   }
 

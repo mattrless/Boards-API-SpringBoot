@@ -21,10 +21,7 @@ public interface CardMapper {
   @Mapping(target = "cardAssignments", ignore = true)
   Card toEntity(CreateCardDto createCardDto);
 
-  @BeanMapping(
-      nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-      ignoreByDefault = true
-  )
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   void updateEntity(UpdateCardDto updateCardDto, @MappingTarget Card card);
 
   CardResponseDto toResponseDto(Card card);

@@ -25,7 +25,7 @@ spring:
       - classpath:db/seed # remove in production
   docker:
     compose:
-      enabled: false
+      enabled: true
       
 application:
   cors:

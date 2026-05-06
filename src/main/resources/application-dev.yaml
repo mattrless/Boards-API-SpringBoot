@@ -23,6 +23,9 @@ spring:
     locations:
       - classpath:db/migration
       - classpath:db/seed # remove in production
+  docker:
+    compose:
+      enabled: false
       
 application:
   cors:

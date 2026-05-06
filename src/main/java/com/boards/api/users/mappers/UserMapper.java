@@ -23,6 +23,10 @@ public interface UserMapper {
 
   // To avoid warnings since converts to entity and the request (body) doesn't have id, createdAt and updatedAt
   @Mapping(target = "id", ignore = true)
+  @Mapping(target = "systemRole", ignore = true)
+  @Mapping(target = "boards", ignore = true)
+  @Mapping(target = "boardMembers", ignore = true)
+  @Mapping(target = "cardAssignments", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   User toEntity(CreateUserDto request);
@@ -36,8 +40,12 @@ public interface UserMapper {
 
   SystemRoleResponseDto toResponseDto(SystemRole systemRole);
 
+  @Mapping(target = "permissions", ignore = true)
   MeResponseDto toMeResponseDto(User user);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
   void updateProfileEntity(UpdateProfileDto dto, @MappingTarget Profile profile);
 }

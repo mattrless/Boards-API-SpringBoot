@@ -12,6 +12,9 @@ import com.boards.api.boards.entities.BoardMember;
 @Mapper(componentModel = "spring")
 public interface BoardMapper {
   @Mapping(target = "id", ignore = true)
+  @Mapping(target = "owner", ignore = true)
+  @Mapping(target = "boardMembers", ignore = true)
+  @Mapping(target = "boardLists", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)  
   Board toEntity(CreateBoardDto createBoardDto);
@@ -22,6 +25,7 @@ public interface BoardMapper {
   @Mapping(target = "boardId", source = "boardMember.board.id")
   @Mapping(target = "boardRole", source = "boardMember.boardRole.name")  
   @Mapping(target = "ownedByCurrentUser", source = "ownedByCurrentUser")
+  @Mapping(target = "permissions", ignore = true)
   BoardPermissionsResponseDto toBoardPermissionsResponseDto(
     BoardMember boardMember,
     boolean ownedByCurrentUser

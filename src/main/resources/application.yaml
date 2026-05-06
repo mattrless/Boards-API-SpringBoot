@@ -1,3 +1,6 @@
 spring:
   profiles:
     active: ${SPRING_ENV}
+    
+server:
+  port: ${PORT}

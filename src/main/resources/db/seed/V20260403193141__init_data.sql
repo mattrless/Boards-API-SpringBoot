@@ -89,9 +89,9 @@ INSERT INTO public.users (email,"password",profile_id,system_role_id,created_at,
 	('mari.doe@mail.com','$2b$10$KHNywjOQ/our6pDpAsYiT.nmPRO1avFQ5s/dOmKACqkGw4ZD3B/2S',4,2,'2026-03-17 16:31:47.951','2026-03-17 16:31:47.951',FALSE),
 	('jeff.belli@mail.com','$2b$10$KHNywjOQ/our6pDpAsYiT.nmPRO1avFQ5s/dOmKACqkGw4ZD3B/2S',5,2,'2026-03-17 16:31:47.962','2026-03-17 16:31:47.962',FALSE);
 
-INSERT INTO public.boards ("name",owner_id,created_at,updated_at) VALUES
-	('Fitness Tracker Development',5,'2026-03-17 16:31:48.208','2026-03-17 16:31:48.208'),
-	('Product Launch Roadmap',2,'2026-03-17 16:31:47.966','2026-03-22 21:51:17.78');
+INSERT INTO public.boards (id, "name",owner_id,created_at,updated_at) VALUES
+	(2, 'Fitness Tracker Development',5,'2026-03-17 16:31:48.208','2026-03-17 16:31:48.208'),
+	(1, 'Product Launch Roadmap',2,'2026-03-17 16:31:47.966','2026-03-22 21:51:17.78');
 
 INSERT INTO public.board_lists (title,"position",board_id,created_at,updated_at) VALUES
 	('Workout Planning',1000.0,2,'2026-03-17 16:31:48.221','2026-03-17 16:31:48.221'),
